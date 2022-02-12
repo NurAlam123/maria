@@ -185,6 +185,9 @@ class Chat(commands.Cog):
             command_channel = guild_data.get("command")
             if command_channel == message.channel.id:
                 if maria_account == message.author.id:
+                    if message.content.lower().startswith("m ") or message.content.lower().startswith("maria ") or message.content.lower().startswith("!m "):
+                        return
+
                     ref_message = message.reference
                     if ref_message:
                         ref_message_id = ref_message.message_id
