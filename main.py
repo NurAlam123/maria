@@ -14,8 +14,8 @@ from discord.ext import commands
 
 #from keep_alive import keep_alive
 
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 
 ############# RECOMMENDED ##############
 logging.basicConfig(level=logging.INFO)
