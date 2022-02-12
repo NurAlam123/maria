@@ -32,7 +32,7 @@ class Chat(commands.Cog):
         info = tb.find_one({"name": "chat_info"})
         guild_data = info.get(str(ctx.guild.id))
         if guild_data:
-            chat_account = guild_data.get("fibu")
+            chat_account = guild_data.get("maria")
             if chat_account:
                 await ctx.send("Do you really want to change the chat acoount? (y/n)")
 
@@ -44,7 +44,7 @@ class Chat(commands.Cog):
                     await ctx.send("Timeout!!\nTry again.")
                 else:
                     if msg.content.lower() == "y":
-                        guild_data["fibu"] = member.id
+                        guild_data["maria"] = member.id
                         data = {
                             str(ctx.guild.id): guild_data
                         }
@@ -55,7 +55,7 @@ class Chat(commands.Cog):
                     else:
                         await ctx.send("Canceled.")
             else:
-                guild_data["fibu"] = member.id
+                guild_data["maria"] = member.id
                 data = {
                     str(ctx.guild.id): guild_data
                 }
@@ -66,7 +66,7 @@ class Chat(commands.Cog):
         else:
             data = {
                 str(ctx.guild.id): {
-                    "fibu": member.id
+                    "maria": member.id
                 }
             }
             tb.update_one({"name": "chat_info"}, {
