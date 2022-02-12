@@ -14,8 +14,8 @@ from discord.ext import commands
 
 #from keep_alive import keep_alive
 
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 ############# RECOMMENDED ##############
 logging.basicConfig(level=logging.INFO)
@@ -24,21 +24,22 @@ logging.basicConfig(level=logging.INFO)
 #YT_API = os.getenv('YT_TOKEN')
 TOKEN = os.getenv('TOKEN')
 
-bot = commands.Bot(['m ', 'maria ', 'M ', 'Maria ', '!m ', '!M '], case_insensetive = True)
+bot = commands.Bot(['m ', 'maria ', 'M ', 'Maria ',
+                   '!m ', '!M '], case_insensetive=True)
 
 
 @bot.event
 async def on_ready():
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="m help"))
     print(f"Logged in as {bot.user}")
-    
+
 
 @bot.command()
 async def ping(ctx):
     msg = discord.Embed(title="Pong :ping_pong:",
                         description=f"{round(bot.latency*1000)} _ms_!", color=0xCB1956)
     await ctx.send(embed=msg)
-    
+
 
 # @bot.command(name= 'join', aliases= ['connect'])
 # async def join(ctx):
@@ -70,8 +71,7 @@ async def ping(ctx):
 #     else:
 #         await voice.disconnect()
 #         await ctx.send(f'Bot disconnected from {voice.channel.mention}!!')
-        
-        
+
 
 # @bot.command(name= "add")
 # async def add(ctx, key, val):
@@ -81,8 +81,7 @@ async def ping(ctx):
 # @bot.command(name="show")
 # async def show(ctx, val):
 #     await ctx.send(f"{db[val]}")
-    
-    
+
 
 # '''
 # {
@@ -94,12 +93,12 @@ async def ping(ctx):
 # song_loop = "off"
 # @bot.command(name='play', aliases=['p'])
 # async def play(ctx, *, url=None):
-    
+
 # #    guild = db.get(ctx.guild.id)
 # #    if guild:
 # #        auto = guild.get("auto")
 # #        if auto:
-# #            songs = 
+# #            songs =
 #     if fast_f:
 #         filename = "song2.mp3"
 #         source = discord.FFmpegPCMAudio(filename)
@@ -109,7 +108,7 @@ async def ping(ctx):
 #         songs = db["songs"]
 #         n = int(db["n"])
 #         limit = len(songs)
-        
+
 #         if not ctx.voice_client:
 #             await ctx.invoke(join)
 #         if not url:
@@ -127,8 +126,8 @@ async def ping(ctx):
 #         if not (url.startswith("https://www") or url.startswith("http://")):
 #             video_search = VideosSearch(url, limit = 1)
 #             url = video_search.result()["result"][0]["id"]
-            
-            
+
+
 #         video = pafy.new(url)
 #         audio = video.audiostreams[0]
 #         filename = "song.mp3"
@@ -150,7 +149,7 @@ async def ping(ctx):
 # async def skip(ctx):
 #     ctx.voice_client.stop()
 #     db["n"] = int(db["n"])+1
-    
+
 #     await ctx.invoke(play)
 
 # @bot.command(name='pause')
@@ -161,7 +160,7 @@ async def ping(ctx):
 # @bot.command(name= "repeat", aliases= ["loop", "l"])
 # async def repeat(ctx, loop_of = "single"):
 #     pass
-    
+
 
 # @bot.command(name='stop')
 # async def stop(ctx):
@@ -187,7 +186,6 @@ async def ping(ctx):
 for files in os.listdir("./cogs"):
     if files.endswith(".py"):
         bot.load_extension(f"cogs.{files[:-3]}")
-
 
 
 # keep_alive()

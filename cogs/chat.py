@@ -42,7 +42,8 @@ class Chat(commands.Cog):
                 else:
                     await ctx.send("Canceled.")
         else:
-            tb.update_one({"name": "chat_info"}, {"$set": {"maria": member.id}})
+            tb.update_one({"name": "chat_info"}, {
+                          "$set": {"maria": member.id}})
             await ctx.send(f"Chat account set to: {member.mention}")
 
     @commands.command(name="chat_channel")
@@ -50,26 +51,47 @@ class Chat(commands.Cog):
     async def chat_channel(self, ctx, channel: discord.TextChannel):
         tb = Chat.database()
         info = tb.find_one({"name": "chat_info"})
-        chat_channel = info.get("channel")
-        if chat_channel:
-            await ctx.send("Do you really want to change the chat channel? (y/n)")
+        guild_data = info.get(str(ctx.guild.id))
+        if guild_data:
+            chat_channel = guild_data.get("channel")
+            if chat_channel:
+                await ctx.send("Do you really want to change the chat channel? (y/n)")
 
-            def check(m):
-                return m.author == ctx.author and m.channel == ctx.channel
-            try:
-                msg = await self.bot.wait_for('message', check=check, timeout=60)
-            except asyncio.TimeoutError:
-                await ctx.send("Timeout!!\nTry again.")
-            else:
-                if msg.content.lower() == "y":
-                    tb.update_one({"name": "chat_info"}, {
-                                    "$set": {"channel": channel.id}})
-                    await ctx.send(f"Chat channel changed to: {channel.mention}")
+                def check(m):
+                    return m.author == ctx.author and m.channel == ctx.channel
+                try:
+                    msg = await self.bot.wait_for('message', check=check, timeout=60)
+                except asyncio.TimeoutError:
+                    await ctx.send("Timeout!!\nTry again.")
                 else:
-                    await ctx.send("Canceled.")
+                    if msg.content.lower() == "y":
+                        data = {
+                            str(ctx.guild.id): {
+                                "channel": channel.id
+                            }
+                        }
+                        tb.update_one({"name": "chat_info"}, {
+                            "$set": data})
+                        await ctx.send(f"Chat channel changed to: {channel.mention}")
+                    else:
+                        await ctx.send("Canceled.")
+            else:
+                data = {
+                    str(ctx.guild.id): {
+                        "channel": channel.id
+                    }
+                }
+                tb.update_one({"name": "chat_info"}, {
+                    "$set": data})
+                await ctx.send(f"Chat channel set to: {channel.mention}")
         else:
+            data = {
+                str(ctx.guild.id): {
+                    "channel": channel.id
+                }
+            }
             tb.update_one({"name": "chat_info"}, {
-                            "$set": {"channel": channel.id}})
+                "$set": data})
             await ctx.send(f"Chat channel set to: {channel.mention}")
 
     @commands.command(name="chat")
@@ -88,7 +110,8 @@ class Chat(commands.Cog):
                 if ref_message:
                     ref_message_id = ref_message.message_id
                     ref_message_obj = await ctx.channel.fetch_message(ref_message_id)
-                    ref_message_content = ref_message_obj.content.replace("maria chat ", "").lstrip("> ")
+                    ref_message_content = ref_message_obj.content.replace(
+                        "maria chat ", "").lstrip("> ")
                     chat_channel = ctx.guild.get_channel(chat_channel_id)
                     channel_messages = await chat_channel.history(limit=100).flatten()
                     for channel_message in channel_messages:
@@ -117,7 +140,8 @@ class Chat(commands.Cog):
                 if ref_message:
                     ref_message_id = ref_message.message_id
                     ref_message_obj = await ctx.channel.fetch_message(ref_message_id)
-                    ref_message_content = ref_message_obj.content.replace("maria chat ", "").lstrip("> ")
+                    ref_message_content = ref_message_obj.content.replace(
+                        "maria chat ", "").lstrip("> ")
                     chat_channel = ctx.guild.get_channel(chat_channel_id)
                     channel_messages = await chat_channel.history(limit=100).flatten()
                     for channel_message in channel_messages:
@@ -143,7 +167,8 @@ class Chat(commands.Cog):
                                         await ctx.send('Process cancelled!!')
                                         break
                                     elif replace_message.content.startswith('>'):
-                                        message_content = replace_message.content.lstrip('> ')
+                                        message_content = replace_message.content.lstrip(
+                                            '> ')
                                         attach = replace_message.attachments
                                         for i in attach:
                                             message_content += f'\n{i.url}'
@@ -159,16 +184,18 @@ class Chat(commands.Cog):
             else:
                 await ctx.send("You are not allowed to edit message.")
 
-
     ###### Error handling ######
+
     @chat.error
     async def _chat_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"Message is missing!!\n```\nmaria chat <message>\n```")
+
     @chat_account.error
     async def _chat_account_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(f"You don't have the permissions to do that!!")
+
     @chat_channel.error
     async def _chat_channel_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
@@ -176,5 +203,38 @@ class Chat(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"Channel is missing!!\n```\nmaria chat_channel <channel>\n```")
 
+
 def setup(bot):
     bot.add_cog(Chat(bot))
+
+# if __name__ == "__main__":
+    # from dotenv import load_dotenv
+    # load_dotenv()
+
+    # con_maria = pymongo.MongoClient(os.getenv("DB"))
+    # db = con_maria["fibu"]  # database
+    # tb = db["other_data"]  # table
+    # tb.delete_one({"name": "chat_info_test"})
+    # # # tb.insert_one({"name": "chat_info_test"})
+    # # # maria_acc_id = info.get("maria")
+    # # tb.update_one({"name": "chat_info_test"}, {"$set": {
+    # #     "2345": {
+    # #         "maria": 2345,
+    # #     }
+    # # }})
+    # info = tb.find_one({"name": "chat_info_test"})
+    # print(info)
+
+    # ### data structure ###
+    # # data = {
+    # #     name: "chat_info_test",
+    # #     1234: {
+    # #         maria: 1234,
+    # #         channel: 1234
+    # #     },
+    # #     2345: {
+    # #         maria: 2345,
+    # #         channel: 2345
+    # #     }
+    # # }
+    # ##########
